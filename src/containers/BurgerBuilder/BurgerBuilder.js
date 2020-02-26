@@ -16,21 +16,11 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 class BurgerBuilder extends Component {
    
     state = {
-        purchasable : false,
         purchasing : false,
-        loading : false,
-        error:false
     }
 
-    componentDidMount(){
-        // axios.get('https://reactjs-68c81.firebaseio.com/ingredients.json')
-        //     .then(response => {
-        //         this.setState({ingredients:response.data})
-        //     })
-        //     .catch(error=>{   
-        //         this.setState({error:true})
-        //       });
-            
+    componentDidMount(){        
+            this.props.initIngredients();
     }
 
     updatePurchaseState (updatedIngredients) {
@@ -120,6 +110,7 @@ class BurgerBuilder extends Component {
         //     .catch(error=> {
         //         this.setState({loading:false,purchasing:false});
         //     });
+        this.props.onInitPurchase();
         this.props.history.push('/checkout');
         // this.props.history.push('/checkout');
         /*const qureyParams = [];
@@ -150,10 +141,10 @@ class BurgerBuilder extends Component {
 
         let orderSummary = null;
  
-
+        let burger = this.props.error ? <p>Ingredeints cannot be loaded</p> :<Spinner/>
         
-        let burger = this.state.error ? <p>Ingredeints cannot be loaded</p> :<Spinner/>
         if(this.props.ings){
+            console.log('error',burger);
             burger =(
                 <Aux>
                     <Burger ingredients={this.props.ings} />
@@ -174,12 +165,7 @@ class BurgerBuilder extends Component {
                                 purchaseContinued = {this.purchaseContinueHandler}
                                 ingredients={this.props.ings}/>;
         }
-        
-        if(this.state.loading){
-            orderSummary=<Spinner/>
-        }
-
-
+  
         //it will return salad:true,bacon:false ....
         return(
             <Aux>
@@ -199,15 +185,18 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = state => {
     return{
-        ings:state.ingredients,
-        pri:state.totalPrice
+        ings:state.burgerBuilder.ingredients,
+        pri:state.burgerBuilder.totalPrice,
+        error:state.burgerBuilder.error
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return{
         addIngredient : (name) => dispatch(burgerBuilderActions.addIngredient(name)),
-        removeIngredient : (name) => dispatch(burgerBuilderActions.removeIngredient(name))
+        removeIngredient : (name) => dispatch(burgerBuilderActions.removeIngredient(name)),
+        initIngredients : () => dispatch(burgerBuilderActions.initIngredients()),
+        onInitPurchase : () => dispatch(burgerBuilderActions.purchaseInit())
     }
 }
 
